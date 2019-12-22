@@ -5,3 +5,5 @@ authors = ["Marnix Kuijs <marnixkuijs@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+rand = "0.7.2"
+cgmath = "0.17.0"
