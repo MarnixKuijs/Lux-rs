@@ -4,4 +4,5 @@ use cgmath::Vector3;
 pub enum Material {
     Lambert(Vector3<f32>),
     Metalic(Vector3<f32>, f32),
+    Dielectric(f32),
 }
