@@ -1,22 +1,52 @@
-extern crate image;
+mod lux;
 
+use cgmath::Vector3;
 use std::fs;
 
-const WIDTH: u32 = 200;
-const HEIGHT: u32 = 100;
+const SCR_WIDTH: u32 = 1000;
+const SCR_HEIGHT: u32 = 500;
+const NUMBER_SAMPLES: u32 = 100;
 
 fn main() {
-
     fs::create_dir_all("bin/").expect("Coudn't create directory");
 
-    let mut imgbuf : image::ImageBuffer<image::Rgb<u8>, std::vec::Vec<u8>> = image::ImageBuffer::new(200, 100);
+    let mut scene = lux::Scene::new();
+    let camera = lux::Camera {
+        position: Vector3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+        lower_left_corner: Vector3 {
+            x: -2.0,
+            y: -1.0,
+            z: -1.0,
+        },
+        width: 4.0,
+        height: 2.0,
+    };
 
+    let object1 = lux::Object {
+        geometry: lux::Geometry::Sphere(Vector3::new(0.0, 0.0, -1.0), 0.5),
+        material: lux::Material::Lambert(Vector3::new(0.8, 0.3, 0.3)),
+    };
+    let object2 = lux::Object {
+        geometry: lux::Geometry::Sphere(Vector3::new(0.0, -100.5, -1.0), 100.0),
+        material: lux::Material::Lambert(Vector3::new(0.8, 0.8, 0.0)),
+    };
+    let object3 = lux::Object {
+        geometry: lux::Geometry::Sphere(Vector3::new(1.0, 0.0, -1.0), 0.5),
+        material: lux::Material::Metalic(Vector3::new(0.8, 0.6, 0.2), 1.0),
+    };
+    let object4 = lux::Object {
+        geometry: lux::Geometry::Sphere(Vector3::new(-1.0, 0.0, -1.0), 0.5),
+        material: lux::Material::Metalic(Vector3::new(0.8, 0.8, 0.8), 0.3),
+    };
 
-    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let r = (255.99 * (x as f32 / WIDTH as f32)) as u8;
-        let g = (255.99 * ((HEIGHT - y) as f32 / HEIGHT as f32)) as u8;
-        *pixel = image::Rgb([r, g, 0]);
-    }
+    scene.add_object(object1);
+    scene.add_object(object2);
+    scene.add_object(object3);
+    scene.add_object(object4);
 
-    imgbuf.save("bin/image.png").unwrap();
+    lux::render(&scene, &camera, SCR_WIDTH, SCR_HEIGHT, NUMBER_SAMPLES);
 }
